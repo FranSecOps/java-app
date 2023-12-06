@@ -1,33 +1,38 @@
+#!/usr/bin/env groovy
+
+def gv
+
 pipeline {
-    agent none
-    tools{
+    agent any
+    tools {
         maven 'Maven'
     }
     stages {
-        stage('build jar') {
+        stage("init") {
             steps {
                 script {
-                    echo "Building the application..."
-                    sh 'mvn package'
+                    gv = load "script.groovy"
                 }
             }
         }
-        stage('build image') {
+        stage("build jar") {
             steps {
                 script {
-                    echo "Building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'PASS', usernameVariable: 'USER')]){
-                        sh 'docker build -t fransecops/java-maven-app:jma-2.0 .'
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh 'docker push fransecops/java-maven-app:jma-2.0'  
-                    }
+                    gv.buildJar()
                 }
             }
         }
-        stage('deploy') {
+        stage("build image") {
             steps {
                 script {
-                    echo "Deploying the application..."
+                    gv.buildImage()
+                }
+            }
+        }
+        stage("deploy") {
+            steps {
+                script {
+                    gv.deployApp()
                 }
             }
         }
