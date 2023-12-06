@@ -1,10 +1,10 @@
 pipeline {
-    agent none
+    agent any
     tools{
         maven 'Maven'
     }
     stages {
-        stage('build jar') {
+        stage("build jar") {
             steps {
                 script {
                     echo "Building the application..."
@@ -12,7 +12,7 @@ pipeline {
                 }
             }
         }
-        stage('build image') {
+        stage("build image") {
             steps {
                 script {
                     echo "Building the docker image..."
