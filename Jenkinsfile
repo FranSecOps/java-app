@@ -12,10 +12,15 @@ pipeline {
                 }
             }
         }
-        stage('test') {
+        stage('build image') {
             steps {
                 script {
-                    echo "Testing the application..."
+                    echo "Building the docker image..."
+                    withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+                        sh 'docker build -t fransecops/java-maven-app:jma-2.0 .'
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh 'docker push fransecops/java-maven-app:jma-2.0'  
+                    }
                 }
             }
         }
@@ -28,4 +33,3 @@ pipeline {
         }
     }
 }
-
